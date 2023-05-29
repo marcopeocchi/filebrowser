@@ -60,7 +60,7 @@ const fetcherSubfolder = async (path: string) => {
 }
 
 const openFile = (path: string) => {
-  window.open(`${getRemote()}/api/open/${encodeHexString(path)}`)
+  window.location.href = `${getRemote()}/api/open/${encodeHexString(path)}`
 }
 
 const onEntryClick = (entry: DirectoryEntry) => {
