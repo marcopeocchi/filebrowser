@@ -20,6 +20,8 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 	basePathLenght := strings.Count(r.root, "/")
 	subDirPathLenght := strings.Count(subDir, "/")
 
+	var upperLevel string
+
 	err := filepath.WalkDir(
 		filepath.Join(r.root, subDir),
 		func(path string, d fs.DirEntry, err error) error {
@@ -31,13 +33,15 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 				return nil
 			}
 
+			if path == filepath.Join(r.root, subDir) {
+				return nil
+			}
+
 			if strings.Count(path, "/") > basePathLenght+subDirPathLenght+1 {
 				return fs.SkipDir
 			}
 
-			var (
-				upper = filepath.Join(path, "..")
-			)
+			upperLevel = filepath.Dir(filepath.Dir(path))
 
 			info, err := d.Info()
 			if err != nil {
@@ -46,7 +50,6 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 
 			files = append(files, domain.DirectoryEntry{
 				Path:        path,
-				UpperLevel:  upper,
 				Name:        d.Name(),
 				Size:        info.Size(),
 				SHASum:      "", // TODO: implementare shasum checks
@@ -59,7 +62,10 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 		},
 	)
 
-	return domain.Response{List: &files}, err
+	return domain.Response{
+		List:           &files,
+		UpperlevelPath: upperLevel,
+	}, err
 }
 
 func (r *Repository) GetBasePathLength(context.Context) (int, error) {

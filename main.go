@@ -36,6 +36,7 @@ func main() {
 	s := newServer()
 	go gracefulShutdown(s)
 
+	fmt.Printf("Listening on http://localhost:%d\n", port)
 	s.ListenAndServe()
 }
 

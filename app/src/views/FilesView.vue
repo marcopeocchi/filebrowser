@@ -38,21 +38,16 @@ const fetcherSubfolder = async (path: string) => {
 
   let data: APIResponse = await res.json()
 
-  const parent = p.length === settings.basepathLength
-    ? ''
-    : p.slice(settings.basepathLength).join('/')
-
   // ugly af
   if (parent) {
     data.list = [{
       name: '..',
-      path: parent,
+      path: data.upperLevelPath,
       isDirectory: true,
       isVideo: false,
       modTime: '',
       shaSum: '',
       size: 0,
-      upperLevel: parent,
     }, ...data.list]
   }
 

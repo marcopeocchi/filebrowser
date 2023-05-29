@@ -14,7 +14,6 @@ const (
 type DirectoryEntry struct {
 	Name        string    `json:"name"`
 	Path        string    `json:"path"`
-	UpperLevel  string    `json:"upperLevel"`
 	Size        int64     `json:"size"`
 	SHASum      string    `json:"shaSum"`
 	ModTime     time.Time `json:"modTime"`
@@ -24,8 +23,8 @@ type DirectoryEntry struct {
 }
 
 type Response struct {
-	BasePathLenght int               `json:"basePathLength"`
 	List           *[]DirectoryEntry `json:"list"`
+	UpperlevelPath string            `json:"upperLevelPath"`
 }
 
 type FSRepository interface {
