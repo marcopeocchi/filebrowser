@@ -5,13 +5,17 @@ import { decodeHexString, encodeHexString, getRemote } from '@/utils/url'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import Loader from '@/components/FullPageLoader.vue'
+
 const settings = useSettingsStore()
+const loading = ref(false)
 const files = ref<DirectoryEntry[]>([])
 
 const route = useRoute()
 const router = useRouter()
 
 const rootFetcher = async () => {
+  loading.value = true
   const res = await fetch(`${getRemote()}/api/walk`, {
     method: 'POST',
     body: JSON.stringify({
@@ -21,6 +25,7 @@ const rootFetcher = async () => {
 
   const data: APIResponse = await res.json()
   files.value = data.list
+  loading.value = false
 }
 
 const fetcherSubfolder = async (path: string) => {
@@ -29,6 +34,7 @@ const fetcherSubfolder = async (path: string) => {
     ? ''
     : `${p.slice(settings.basepathLength).join('/')}/`
 
+  loading.value = true
   const res = await fetch(`${getRemote()}/api/walk`, {
     method: 'POST',
     body: JSON.stringify({
@@ -52,6 +58,7 @@ const fetcherSubfolder = async (path: string) => {
   }
 
   files.value = data.list
+  loading.value = false
 }
 
 const openFile = (path: string) => {
@@ -83,6 +90,7 @@ onUnmounted(() => stop())
 
 <template>
   <v-list lines="two">
+    <Loader :open="loading" />
     <v-list-item @click="onEntryClick(file)" v-for="file in files" :key="file.name" :title="file.name"
       :subtitle="getFormattedDate(file)">
       <template v-slot:prepend>
