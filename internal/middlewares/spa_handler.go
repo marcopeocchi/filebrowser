@@ -17,7 +17,7 @@ type SpaHandler struct {
 	routes     []string
 }
 
-func (s *SpaHandler) AddRoute(route string) *SpaHandler {
+func (s *SpaHandler) AddClientRoute(route string) *SpaHandler {
 	s.routes = append(s.routes, route)
 	return s
 }

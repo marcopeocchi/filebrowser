@@ -52,6 +52,8 @@ func newServer() *http.Server {
 		Filesystem: &build,
 	}
 
+	sh.AddClientRoute("/files")
+
 	fsContainer := fsDomain.Container(root)
 
 	r.Route("/api", func(r chi.Router) {
