@@ -64,10 +64,12 @@ const openFile = (path: string) => {
 }
 
 const onEntryClick = (entry: DirectoryEntry) => {
-  router.push(`/files/${encodeHexString(entry.path)}`)
-  entry.isDirectory
-    ? fetcherSubfolder(entry.path)
-    : openFile(entry.path)
+  if (entry.isDirectory) {
+    fetcherSubfolder(entry.path)
+    router.push(`/files/${encodeHexString(entry.path)}`)
+    return
+  }
+  openFile(entry.path)
 }
 
 const getFormattedDate = (entry: DirectoryEntry) => entry.name === '..'
