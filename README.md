@@ -2,6 +2,6 @@
 
 A lightweight filebrowser.
 
-![scrot](https://i.postimg.cc/0y364LvB/image.png)
+![image.png](https://i.postimg.cc/0y364LvB/image.png)](https://postimg.cc/k2QX6YBQ)
 
 Golang is king.
