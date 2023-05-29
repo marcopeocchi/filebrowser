@@ -2,4 +2,4 @@
 
 A lightweight filebrowser.
 
-![](https://i.ibb.co/f4LkmJ2g/image.png)
+![scrot](https://i.ibb.co/f4LkmJg/image.png)
