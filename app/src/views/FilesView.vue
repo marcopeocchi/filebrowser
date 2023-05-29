@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useSettingsStore } from '@/stores/settings';
-import { decodeHexString, encodeHexString, getRemote } from '@/utils/url';
-import { onUnmounted } from 'vue';
-import { onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+
+import { useSettingsStore } from '@/stores/settings'
+import { decodeHexString, encodeHexString, getRemote } from '@/utils/url'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const settings = useSettingsStore()
 const files = ref<DirectoryEntry[]>([])
@@ -42,6 +42,7 @@ const fetcherSubfolder = async (path: string) => {
     ? ''
     : p.slice(settings.basepathLength).join('/')
 
+  // ugly af
   if (parent) {
     data.list = [{
       name: '..',
@@ -94,9 +95,6 @@ onUnmounted(() => stop())
           </v-icon>
         </v-avatar>
       </template>
-      <!-- <template v-slot:append>
-          <v-btn color="grey-lighten-1" icon="mdi-information" variant="text"></v-btn>
-        </template> -->
     </v-list-item>
   </v-list>
 </template>
