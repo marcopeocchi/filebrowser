@@ -59,10 +59,7 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 		},
 	)
 
-	return domain.Response{
-		List:           &files,
-		BasePathLenght: basePathLenght,
-	}, err
+	return domain.Response{List: &files}, err
 }
 
 func (r *Repository) GetBasePathLength(context.Context) (int, error) {

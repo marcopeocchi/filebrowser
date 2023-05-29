@@ -1,10 +1,17 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"flag"
+	"fmt"
 	"io/fs"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,18 +23,23 @@ var (
 	//go:embed app/dist
 	vue  embed.FS
 	root string
+	port int
 )
 
 func init() {
 	flag.StringVar(&root, "r", ".", "Root directory")
+	flag.IntVar(&port, "p", 8080, "Port to listen at")
 	flag.Parse()
 }
 
 func main() {
-	runBlocking()
+	s := newServer()
+	go gracefulShutdown(s)
+
+	s.ListenAndServe()
 }
 
-func runBlocking() {
+func newServer() *http.Server {
 	r := chi.NewRouter()
 	r.Use(middlewares.CORS)
 	r.Use(middleware.Logger)
@@ -49,11 +61,13 @@ func runBlocking() {
 
 	r.Get("/*", sh.Handler())
 
-	http.ListenAndServe(":8080", r)
+	return &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: r,
+	}
 }
 
-/*
-func gracefulShutdown(app *fiber.App) {
+func gracefulShutdown(s *http.Server) {
 	ctx, stop := signal.NotifyContext(context.Background(),
 		os.Interrupt,
 		syscall.SIGTERM,
@@ -62,13 +76,20 @@ func gracefulShutdown(app *fiber.App) {
 
 	go func() {
 		<-ctx.Done()
+		fmt.Println()
 		log.Println("shutdown signal received")
 
+		ctxTimeout, cancel := context.WithTimeout(
+			context.Background(),
+			5*time.Second,
+		)
+
 		defer func() {
-			db.Persist()
 			stop()
-			app.ShutdownWithTimeout(time.Second * 5)
+			cancel()
+			log.Println("shutdown completed")
 		}()
+
+		s.Shutdown(ctxTimeout)
 	}()
 }
-*/
