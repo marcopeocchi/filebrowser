@@ -23,6 +23,10 @@ const rootFetcher = async () => {
     })
   })
 
+  if (!res.ok) {
+    router.push('/login')
+  }
+
   const data: APIResponse = await res.json()
   files.value = data.list
   loading.value = false
@@ -41,6 +45,10 @@ const fetcherSubfolder = async (path: string) => {
       'subdir': subdir
     })
   })
+
+  if (!res.ok) {
+    router.push('/login')
+  }
 
   let data: APIResponse = await res.json()
 
