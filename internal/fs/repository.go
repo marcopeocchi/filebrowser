@@ -20,7 +20,14 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 	basePathLenght := strings.Count(r.root, "/")
 	subDirPathLenght := strings.Count(subDir, "/")
 
-	var upperLevel string
+	upperLevel := filepath.Dir(filepath.Join(r.root, subDir))
+
+	files = append(files, domain.DirectoryEntry{
+		IsDirectory: true,
+		Path:        upperLevel,
+		Name:        "..",
+		Size:        0,
+	})
 
 	err := filepath.WalkDir(
 		filepath.Join(r.root, subDir),
@@ -40,8 +47,6 @@ func (r *Repository) WalkDir(ctx context.Context, subDir string) (domain.Respons
 			if strings.Count(path, "/") > basePathLenght+subDirPathLenght+1 {
 				return fs.SkipDir
 			}
-
-			upperLevel = filepath.Dir(filepath.Dir(path))
 
 			info, err := d.Info()
 			if err != nil {

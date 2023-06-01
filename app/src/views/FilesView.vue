@@ -6,10 +6,14 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import Loader from '@/components/FullPageLoader.vue'
+import { useSearchStore } from '@/stores/search'
 
 const settings = useSettingsStore()
+const search = useSearchStore()
+
 const loading = ref(false)
 const files = ref<DirectoryEntry[]>([])
+const filteredFiles = ref<DirectoryEntry[]>([])
 
 const route = useRoute()
 const router = useRouter()
@@ -28,7 +32,9 @@ const rootFetcher = async () => {
   }
 
   const data: APIResponse = await res.json()
+
   files.value = data.list
+  filteredFiles.value = data.list
   loading.value = false
 }
 
@@ -52,20 +58,8 @@ const fetcherSubfolder = async (path: string) => {
 
   let data: APIResponse = await res.json()
 
-  // ugly af
-  if (parent) {
-    data.list = [{
-      name: '..',
-      path: data.upperLevelPath,
-      isDirectory: true,
-      isVideo: false,
-      modTime: '',
-      shaSum: '',
-      size: 0,
-    }, ...data.list]
-  }
-
   files.value = data.list
+  filteredFiles.value = data.list
   loading.value = false
 }
 
@@ -88,8 +82,17 @@ const getFormattedDate = (entry: DirectoryEntry) => entry.name === '..'
 
 const stop = watch(
   () => route.path,
-  // @ts-ignore
-  () => fetcherSubfolder(decodeHexString(route.path.split('/').at(-1))),
+  () => fetcherSubfolder(decodeHexString(route.path.split('/').pop()!)),
+)
+
+watch(
+  search,
+  (current) => {
+    filteredFiles.value = files.value.filter(f => f.name
+      .toLowerCase()
+      .includes(current.search.toLowerCase())
+    )
+  }
 )
 
 onMounted(() => settings.fetchBasepathLength().then(rootFetcher))
@@ -99,7 +102,7 @@ onUnmounted(() => stop())
 <template>
   <v-list lines="two">
     <Loader :open="loading" />
-    <v-list-item @click="onEntryClick(file)" v-for="file in files" :key="file.name" :title="file.name"
+    <v-list-item @click="onEntryClick(file)" v-for="file in filteredFiles" :key="file.name" :title="file.name"
       :subtitle="getFormattedDate(file)">
       <template v-slot:prepend>
         <v-avatar color="grey-lighten-1">

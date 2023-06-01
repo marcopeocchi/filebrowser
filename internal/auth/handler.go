@@ -36,7 +36,7 @@ func (h *Handler) Login() http.HandlerFunc {
 			"userID":    user.Uid,
 			"username":  user.Username,
 			"role":      user.Role,
-			"expiresAt": time.Now().Add(time.Minute * 30),
+			"expiresAt": time.Now().Add(time.Hour * 24 * 30),
 		})
 
 		tokenString, err := token.SignedString([]byte(os.Getenv("JWTSECRET")))
@@ -48,7 +48,7 @@ func (h *Handler) Login() http.HandlerFunc {
 			Name:     "jwt",
 			HttpOnly: true,
 			Secure:   false,
-			Expires:  time.Now().Add(time.Minute * 30),
+			Expires:  time.Now().Add(time.Hour * 24 * 30),
 			Value:    tokenString,
 			Path:     "/",
 		}

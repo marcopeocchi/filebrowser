@@ -9,8 +9,17 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+var (
+	disableAuth = os.Getenv("DISABLE_AUTH") != ""
+)
+
 func Authenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if disableAuth {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		cookie, err := r.Cookie("jwt")
 
 		if err != nil {
