@@ -32,9 +32,9 @@ const login = async () => {
 
 <template>
   <v-card class="mx-auto py-6 px-6 mt-8" max-width="600">
-    <v-form v-model="form" @submit.prevent="">
+    <v-form v-model="form">
       <v-text-field placeholder="Username" v-model="username" clearable :loading="loading" />
-      <v-text-field placeholder="Password" v-model="password" clearable :loading="loading" />
+      <v-text-field placeholder="Password" v-model="password" clearable :loading="loading" type="password" />
       <v-btn class="mt-6" :disabled="!form" block color="success" size="large" type="submit" variant="elevated"
         @click="login">
         Sign In
